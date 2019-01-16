@@ -56,9 +56,24 @@ export default class CodeFlask {
     this.updateCode(this.code)
   }
 
+  clearChildren(el) {
+    while (!!el.firstChild) {
+      el.removeChild(el.firstChild)
+    }
+  }
+
+  injectChildren(el, children) {
+    this.clearChildren(el)
+    let content = children
+    if (typeof content === 'string') {
+      content = document.createTextNode(content)
+    }
+    el.appendChild(content)
+  }
+  
   createWrapper () {
-    this.code = this.editorRoot.innerHTML
-    this.editorRoot.innerHTML = ''
+    this.code = this.editorRoot.textContent
+    this.clearChildren(this.editorRoot)
     this.elWrapper = this.createElement('div', this.editorRoot)
     this.elWrapper.classList.add('codeflask')
   }
@@ -149,19 +164,24 @@ export default class CodeFlask {
   }
 
   updateLineNumbersCount () {
-    let numberList = ''
+    const numberList = document.createDocumentFragment()
+    const span = document.createElement('span')
+    span.classList.add('codeflask__lines__line')
 
     for (let i = 1; i <= this.lineNumber; i++) {
-      numberList = numberList + `<span class="codeflask__lines__line">${i}</span>`
-    }
+      const clone = span.cloneNode()
+      clone.textContent = i
 
-    this.elLineNumbers.innerHTML = numberList
+      numberList.appendChild(clone)
+    }
+      
+    this.injectChildren(this.elLineNumbers, numberList)
   }
 
   listenTextarea () {
     this.elTextarea.addEventListener('input', (e) => {
       this.code = e.target.value
-      this.elCode.innerHTML = escapeHtml(e.target.value)
+      this.injectChildren(this.elCode, e.target.value)
       this.highlight()
       setTimeout(() => {
         this.runUpdate()
@@ -374,7 +394,8 @@ export default class CodeFlask {
   updateCode (newCode) {
     this.code = newCode
     this.elTextarea.value = newCode
-    this.elCode.innerHTML = escapeHtml(newCode)
+    console.log(newCode);
+    this.injectChildren(this.elCode, newCode)
     this.highlight()
     this.setLineNumber()
     setTimeout(this.runUpdate.bind(this), 1)

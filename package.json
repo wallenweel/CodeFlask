@@ -19,7 +19,7 @@
     "prepublishOnly": "npm install && npm run build"
   },
   "dependencies": {
-    "prismjs": "^1.14.0"
+    "prismjs": "https://github.com/wallenweel/prism.git"
   },
   "devDependencies": {
     "chai": "^4.1.2",

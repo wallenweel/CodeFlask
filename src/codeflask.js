@@ -394,7 +394,6 @@ export default class CodeFlask {
   updateCode (newCode) {
     this.code = newCode
     this.elTextarea.value = newCode
-    console.log(newCode);
     this.injectChildren(this.elCode, newCode)
     this.highlight()
     this.setLineNumber()
